@@ -2,13 +2,15 @@
 A python client for accessing an [Omics Dashboard](https://github.com/BiRG/Omics-Dashboard) service.
 
 ## Usage Examples
+### Log in to service
 ```python
 from omics_dashboard_client import Session, Collection, Analysis
 import numpy as np
 
-# log in to service
 session = Session('https://example.com/omics', 'test@test.net', 'testpass')
-
+```
+### Access collections
+```python
 # access collection #12
 collection = session.get_collection(12)
 
@@ -22,7 +24,9 @@ collection_name = collection.attrs['description']
 
 # access a collection file attribute:
 collection_name = collection.file_attrs['processing_log']
-
+```
+### Modify collections
+```python
 # modify a collection dataset
 Y = collection.get_dataset('Y')
 Y = 0.01 * Y
