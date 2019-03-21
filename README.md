@@ -1,6 +1,15 @@
 # Omics Dashboard Python Client
 A python client for accessing an [Omics Dashboard](https://github.com/BiRG/Omics-Dashboard) service.
 
+## Installation
+### Requirements
+Python 3.5+ or 2.7
+
+You can install from this repository using `pip`:
+```bash
+pip install git+git://github.com/BiRG/Omics-Dashboard-Python-Client.git
+```
+
 ## Usage Examples
 All records can be edited in a similar fashion, but the `Job` record is not editable here or on the server.
 
