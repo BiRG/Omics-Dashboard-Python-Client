@@ -3,7 +3,7 @@ A python client for accessing an [Omics Dashboard](https://github.com/BiRG/Omics
 
 ## Installation
 ### Requirements
-Python 3.5+ or 2.7
+Python 3.4+ or 2.7
 
 You can install from this repository using `pip`:
 ```bash
