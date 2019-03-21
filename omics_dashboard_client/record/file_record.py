@@ -1,4 +1,5 @@
 import os
+import shutil
 import tempfile
 
 from typing import Dict, Any
@@ -22,15 +23,16 @@ class FileRecord(OmicsRecord):
         self._upload_url = '{}/upload'.format(base_url)
         self._update_url = '{}/{}'.format(base_url, self.id) if self.id is not None else None
         self._create_url = '{}/create'.format(base_url)
-        self._download_url = '{}/download'.format(base_url)
+        self._download_url = '{}/download/{}'.format(base_url, self.id)
         self._filename = res_data['filename']
         self._file_type = res_data['file_type']
         self._file_info = res_data['file_info']
-        self.__temp_dir = None
+        if not hasattr(self, '__temp_dir'):
+            self.__temp_dir = None
 
     def __del__(self):
         if self.__temp_dir is not None and os.path.isdir(self.__temp_dir):
-            os.rmdir(self.__temp_dir)
+            shutil.rmtree(self.__temp_dir)
 
     @property
     def upload_url(self):

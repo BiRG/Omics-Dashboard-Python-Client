@@ -151,14 +151,15 @@ class Record(object):
         """
         raise NotImplementedError()  # should be overloaded to fit established payload for record type
 
-    def update(self, new_data):
-        # type: (Dict[str, Any]) -> None
+    def update(self, new_data, base_url):
+        # type: (Dict[str, Any], str) -> None
         """
         Take an object from the server and update fields of this object
         :param new_data:
+        :param base_url: Base url of the application.
         :return:
         """
-        self.__init__(new_data, self._base_url)
+        self.__init__(new_data, base_url)
 
     def invalidate(self):
         """

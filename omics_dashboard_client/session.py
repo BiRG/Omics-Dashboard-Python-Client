@@ -96,7 +96,11 @@ class Session:
         """
         url = '{}/{}'.format(self.__base_url, record_type.url_suffix)
         res = requests.get(url, headers=self.get_auth_header())
-        res.raise_for_status()
+        try:
+            res.raise_for_status()
+        except requests.HTTPError as e:
+            print('Response:')
+            print(e.response.json())
         return [record_type(entry, self.__base_url, self.__current_user.admin) for entry in res.json()]
 
     def delete(self, record):
@@ -108,7 +112,11 @@ class Session:
         """
         if record.valid:
             res = requests.delete(record.update_url, headers=self.get_auth_header())
-            res.raise_for_status()
+            try:
+                res.raise_for_status()
+            except requests.HTTPError as e:
+                print('Response: ')
+                print(e.response.json())
             record.invalidate()
             return res.json()
         else:
@@ -132,9 +140,12 @@ class Session:
                                     files={'file': open(record.local_filename, 'rb')})
             else:
                 res = requests.post(record.update_url, headers=self.get_auth_header(), json=record.serialize())
+            try:
                 res.raise_for_status()
-            res.raise_for_status()
-            record.update(res.json())
+            except requests.HTTPError as e:
+                print('Response: ')
+                print(e.response.json())
+            record.update(res.json(), self.__base_url)
             return record
         else:
             raise ValueError('Record is not valid.')
@@ -158,7 +169,11 @@ class Session:
                 res = requests.post(record.create_url,
                                     headers=self.get_auth_header(),
                                     data=record.serialize())
-            res.raise_for_status()
+            try:
+                res.raise_for_status()
+            except requests.HTTPError as e:
+                print('Response: ')
+                print(e.response.json())
             record.update(res.json())
             return record
         else:
@@ -171,7 +186,12 @@ class Session:
         :param record:
         :return:
         """
-        res = requests.get(record.download_url, headers={self.get_auth_header()})
+        res = requests.get(record.download_url, headers=self.get_auth_header())
+        try:
+            res.raise_for_status()
+        except requests.HTTPError as e:
+            print('Response: ')
+            print(e.response.json())
         record.download_file(res.content)
         return record
 
@@ -189,7 +209,11 @@ class Session:
             'workflow': workflow.serialize() if isinstance(workflow, Workflow) else workflow
         }
         res = requests.post(submit_url, headers=self.get_auth_header(), json=data)
-        res.raise_for_status()
+        try:
+            res.raise_for_status()
+        except requests.HTTPError as e:
+            print('Response: ')
+            print(e.response.json())
         return Job(res.json(), self.__base_url)
 
     def cancel_job(self, job):
@@ -201,5 +225,9 @@ class Session:
         """
         url = '{}/{}/{}?method=cancel'.format(self.__base_url, Job.url_suffix, job.id)
         res = requests.post(url, headers=self.get_auth_header(), json={})
-        res.raise_for_status()
+        try:
+            res.raise_for_status()
+        except requests.HTTPError as e:
+            print('Response: ')
+            print(e.response.json())
         return res.json()

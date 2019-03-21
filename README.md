@@ -14,7 +14,7 @@ pip install git+git://github.com/BiRG/Omics-Dashboard-Python-Client.git
 All records can be edited in a similar fashion, but the `Job` record is not editable here or on the server.
 
 ### Log in to service
-`credentials.json` (stored with 700 permissions or equivalent):
+`credentials.json` (stored with 400 permissions or equivalent):
 
 ```json 
 {

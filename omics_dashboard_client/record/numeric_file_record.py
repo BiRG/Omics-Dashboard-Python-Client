@@ -22,6 +22,20 @@ class NumericFileRecord(FileRecord):
         """
         super(NumericFileRecord, self).__init__(res_data, base_url, session_user_is_admin)
 
+    def get_attrs(self, path=None):
+        # type: (str) -> Dict[str, Any]
+        """
+        Get a list of all the attributes of the file or the dataset at path.
+        :param path:
+        :return:
+        """
+        if self.local_filename is not None and os.path.isfile(self.local_filename):
+            with h5py.File(self.local_filename, 'r') as fp:
+                if path is not None:
+                    return {key: value for key, value in fp[path].attrs.items()}
+                else:
+                    return {key: value for key, value in fp.attrs.items()}
+
     def get_attr(self, key, path=None):
         # type: (str, str) -> Any
         """
@@ -50,7 +64,7 @@ class NumericFileRecord(FileRecord):
         :return:
         """
         if self.local_filename is not None and os.path.isfile(self.local_filename):
-            with h5py.File(self.local_filename, 'r') as fp:
+            with h5py.File(self.local_filename, 'r+') as fp:
                 if path is not None:
                     fp[path].attrs[key] = value
                 else:

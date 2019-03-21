@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="omics-dashboard-python-client",
+    name="omics-dashboard-client",
     version="19.03a",
     author="BiRG @ Wright State University",
     author_email="foose.3@wright.edu",
