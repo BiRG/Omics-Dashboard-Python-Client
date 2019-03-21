@@ -88,6 +88,10 @@ session.create(collection)  # the 'id' field will change to that of the new coll
 collection = session.get(Collection, 13)
 session.delete(collection)
 
+# Get a Pandas DataFrame containing only 'x' and 'Y'
+collection = session.get(Collection, 76)
+df = collection.get_dataframe(include_labels=False, numeric_columns=True)
+
 ```
 ### Start a workflow on the job server
 ```python
