@@ -27,12 +27,30 @@ class FileRecord(OmicsRecord):
         self._filename = res_data['filename']
         self._file_type = res_data['file_type']
         self._file_info = res_data['file_info']
-        if not hasattr(self, '__temp_dir'):
-            self.__temp_dir = None
+        self._temp_dir = None
 
     def __del__(self):
-        if self.__temp_dir is not None and os.path.isdir(self.__temp_dir):
-            shutil.rmtree(self.__temp_dir)
+        if self._temp_dir is not None and os.path.isdir(self._temp_dir):
+            shutil.rmtree(self._temp_dir)
+
+    @property
+    def temp_dir(self):
+        # type: () -> str
+        """
+        Where the file(s) are saved to.
+        :return:
+        """
+        return self._temp_dir
+
+    @temp_dir.setter
+    def temp_dir(self, value):
+        # type: (str) -> None
+        raise RuntimeError('temp_dir cannot be changed.')
+
+    @temp_dir.deleter
+    def temp_dir(self):
+        raise RuntimeError('Fields cannot be deleted.')
+
 
     @property
     def upload_url(self):
@@ -148,10 +166,20 @@ class FileRecord(OmicsRecord):
         Associate this record with a file on disk.
         :return: The filename
         """
-        if self.__temp_dir is None or not os.path.isdir(self.__temp_dir):
-            self.__temp_dir = tempfile.mkdtemp()
+        if self._temp_dir is None or not os.path.isdir(self._temp_dir):
+            self._temp_dir = tempfile.mkdtemp()
         if self._local_filename is not None and os.path.isfile(self._local_filename):  # delete existing file
             os.remove(self._local_filename)
-        self._local_filename = os.path.join(self.__temp_dir, os.path.basename(self._filename))
-        with open(self._local_filename, 'wb') as file:
-            file.write(content)
+        self._local_filename = os.path.join(self._temp_dir, os.path.basename(self._filename))
+        with open(self._local_filename, 'wb') as fp:
+            fp.write(content)
+
+    def update(self, new_data, base_url):
+        super(FileRecord, self).update(new_data, base_url)
+        self._upload_url = '{}/upload'.format(base_url)
+        self._update_url = '{}/{}'.format(base_url, self.id) if self.id is not None else None
+        self._create_url = '{}/create'.format(base_url)
+        self._download_url = '{}/download/{}'.format(base_url, self.id)
+        self._filename = new_data['filename']
+        self._file_type = new_data['file_type']
+        self._file_info = new_data['file_info']

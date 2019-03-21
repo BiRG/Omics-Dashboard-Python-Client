@@ -46,3 +46,7 @@ class ExternalFile(FileRecord):
         out = super(ExternalFile, self).serialize()
         out.update({'analysis_ids': self._analysis_ids})
         return out
+
+    def update(self, new_data, base_url):
+        super(ExternalFile, self).update(new_data, base_url)
+        self._analysis_ids = new_data['analysis_ids']

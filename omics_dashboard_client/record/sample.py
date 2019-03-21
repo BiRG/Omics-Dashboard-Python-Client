@@ -53,3 +53,7 @@ class Sample(NumericFileRecord):
             'sample_group_ids': self._sample_group_ids
         })
         return out
+
+    def update(self, new_data, base_url):
+        super(Sample, self).update(new_data, base_url)
+        self._sample_group_ids = new_data['sample_group_ids']

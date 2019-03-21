@@ -83,3 +83,9 @@ class Analysis(OmicsRecord):
             'external_file_ids': self._external_file_ids
         })
         return out
+
+    def update(self, res_data, base_url):
+        super(Analysis, self).update(res_data, base_url)
+        self._workflow_ids = [workflow['id'] for workflow in res_data['workflows']]
+        self._collection_ids = [collection['id'] for collection in res_data['collections']]
+        self._external_file_ids = [external_file['id'] for external_file in res_data['external_files']]

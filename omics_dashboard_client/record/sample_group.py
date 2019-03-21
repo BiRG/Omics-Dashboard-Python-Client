@@ -76,3 +76,8 @@ class SampleGroup(OmicsRecord):
             'upload_job_id': self._upload_job_id
         })
         return out
+
+    def update(self, new_data, base_url):
+        super(SampleGroup, self).update(new_data, base_url)
+        self._sample_ids = [sample['id'] for sample in new_data['samples']]
+        self._upload_job_id = new_data['upload_job_id']

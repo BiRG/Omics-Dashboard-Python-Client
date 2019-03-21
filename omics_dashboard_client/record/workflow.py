@@ -89,3 +89,9 @@ class Workflow(FileRecord):
             'analysis_ids': self.analysis_ids
         })
         return out
+
+    def update(self, new_data, base_url):
+        super(Workflow, self).update(new_data, base_url)
+        self._workflow_language = new_data['workflow_language']
+        self._workflow_definition = new_data['workflow_definition']
+        self._analysis_ids = new_data['analysis_ids']

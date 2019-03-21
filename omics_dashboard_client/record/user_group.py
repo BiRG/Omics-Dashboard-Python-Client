@@ -146,3 +146,11 @@ class UserGroup(Record):
             'member_ids': self._member_ids,
             'admin_ids': self._admin_ids
         }
+
+    def update(self, new_data, base_url):
+        super(UserGroup, self).update(new_data, base_url)
+        self._creator_id = new_data['creator_id']
+        self._name = new_data['name']
+        self._description = new_data['description']
+        self._member_ids = [member['id'] for member in new_data['members']]
+        self._admin_ids = [admin['id'] for admin in new_data['admins']]

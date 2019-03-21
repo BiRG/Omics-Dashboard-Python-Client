@@ -144,3 +144,14 @@ class WorkflowModule(Record):
             'tool_definition': self._tool_definition
         })
         return out
+
+    def update(self, new_data, base_url):
+        super(WorkflowModule, self).update(new_data, base_url)
+        self._path = new_data['path']
+        self._label = new_data['label']
+        self._description = new_data['description']
+        self._package = new_data['package']
+        self._package_description = new_data['package_description']
+        self._subpackage = new_data['subpackage']
+        self._subpackage_description = new_data['subpackage_description']
+        self._tool_definition = new_data['tool_definition']

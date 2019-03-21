@@ -291,3 +291,18 @@ class OmicsRecord(Record):
             'created_on': self._created_on.isoformat(),
             'updated_on': self._updated_on.isoformat()
         }
+
+    def update(self, new_data, base_url):
+        super(OmicsRecord, self).update(new_data, base_url)
+        self._name = new_data['name']
+        self._description = new_data['description']
+        self._creator_id = new_data['creator_id']
+        self._owner_id = new_data['owner_id']
+        self._last_editor_id = new_data['last_editor_id']
+        self._group_can_read = new_data['group_can_read']
+        self._group_can_write = new_data['group_can_write']
+        self._all_can_read = new_data['all_can_read']
+        self._all_can_write = new_data['all_can_write']
+        self._user_group_id = new_data['user_group_id']
+        self.__is_write_permitted = True if self.id is None or self.__session_user_is_admin else new_data[
+            'is_write_permitted'] if 'is_write_permitted' in new_data else False

@@ -193,3 +193,13 @@ class User(Record):
             'group_ids': self.group_ids,
             'admin_group_ids': self.admin_group_ids
         }
+
+    def update(self, new_data, base_url):
+        super(User, self).update(new_data, base_url)
+        self._email = new_data['email']
+        self._name = new_data['name']
+        self._admin = new_data['admin']
+        self._active = new_data['active']
+        self._primary_user_group_id = new_data['primary_user_group_id']
+        self._group_ids = new_data['group_ids']
+        self._admin_group_ids = new_data['admin_group_ids']

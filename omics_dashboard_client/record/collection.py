@@ -113,3 +113,8 @@ class Collection(NumericFileRecord):
             'analysis_ids': self._analysis_ids
         })
         return out
+
+    def update(self, new_data, base_url):
+        super(Collection, self).update(new_data, base_url)
+        self._analysis_ids = new_data['analysis_ids']
+        self._parent_id = new_data['parent_id']

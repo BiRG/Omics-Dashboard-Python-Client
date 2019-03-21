@@ -159,7 +159,14 @@ class Record(object):
         :param base_url: Base url of the application.
         :return:
         """
-        self.__init__(new_data, base_url)
+        self._original_id = new_data['id'] if 'id' in new_data else None
+        self._id = new_data['id'] if 'id' in new_data else None
+        self._created_on = datetime.strptime(new_data['created_on'], '%Y-%m-%dT%H:%M:%S')
+        self._updated_on = datetime.strptime(new_data['updated_on'], '%Y-%m-%dT%H:%M:%S')
+        self._base_url = base_url
+        self._update_url = '{}/{}'.format(base_url, self.id) if self.id is not None else None
+        self._create_url = '{}/create'.format(base_url)
+        self._valid = True
 
     def invalidate(self):
         """
