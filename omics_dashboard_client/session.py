@@ -59,7 +59,7 @@ class Session:
                 res = requests.get('{}/current_user'.format(self.__base_url),
                                    headers={'Authorization': 'Bearer {}'.format(self.__auth_token)})
                 res.raise_for_status()
-                self.__current_user = User(res.json(), self.__base_url, False, False)
+                self.__current_user = User(res.json(), self.__base_url, False)
                 return self.__current_user.active
             except requests.HTTPError:
                 return False
