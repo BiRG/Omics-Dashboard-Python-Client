@@ -1,13 +1,14 @@
-import requests
 import json
-from typing import Union, Dict, Type
-from omics_dashboard_client.record.record import Record
-from omics_dashboard_client.record.file_record import FileRecord
+
+import requests
+from typing import Union, Dict, Type, List, Any
 
 from omics_dashboard_client.record.analysis import Analysis
 from omics_dashboard_client.record.collection import Collection
 from omics_dashboard_client.record.external_file import ExternalFile
+from omics_dashboard_client.record.file_record import FileRecord
 from omics_dashboard_client.record.job import Job
+from omics_dashboard_client.record.record import Record
 from omics_dashboard_client.record.sample import Sample
 from omics_dashboard_client.record.sample_group import SampleGroup
 from omics_dashboard_client.record.user import User
@@ -85,6 +86,18 @@ class Session:
         res.raise_for_status()
         return record_type(res.json(), self.__base_url, self.__current_user.admin)
 
+    def get_all(self, record_type):
+        # type: (AnyRecordType) -> List[Record]
+        """
+        Get all the records of a particular type.
+        :param record_type:
+        :return:
+        """
+        url = '{}/{}'.format(self.__base_url, record_type.url_suffix)
+        res = requests.get(url, headers=self.get_auth_header())
+        res.raise_for_status()
+        return [record_type(entry, self.__base_url, self.__current_user.admin) for entry in res.json()]
+
     def delete(self, record):
         # type: (Record) -> Dict[str, str]
         """
@@ -110,8 +123,10 @@ class Session:
         """
         if record.valid:
             if isinstance(record, FileRecord) and record.local_filename is not None and upload_file:
+                headers = {'Content-Type': 'multipart/form-data'}
+                headers.update(self.get_auth_header())
                 res = requests.post(record.update_url,
-                                    headers={**self.get_auth_header(), 'Content-Type': 'multipart/form-data'},
+                                    headers=headers,
                                     data=record.serialize(),
                                     files={'file': open(record.local_filename, 'rb')})
             else:
@@ -132,8 +147,10 @@ class Session:
         """
         if record.valid:
             if isinstance(record, FileRecord) and record.local_filename is not None:
+                headers = {'Content-Type': 'multipart/form-data'}
+                headers.update(self.get_auth_header())
                 res = requests.post(record.create_url,
-                                    headers={**self.get_auth_header(), 'Content-Type': 'multipart/form-data'},
+                                    headers=headers,
                                     data=record.serialize(),
                                     files={'file': open(record.local_filename, 'rb')})
             else:
@@ -156,3 +173,20 @@ class Session:
         res = requests.get(record.download_url, headers={self.get_auth_header()})
         record.download_file(res.content)
         return record
+
+    def submit_job(self, workflow, job_params):
+        # type: (Union[Workflow, Dict[str, Any]], Dict[str, Any]) -> Job
+        """
+        Start a job on the job server.
+        :param workflow: Either a workflow or the workflow definition as dictionary.
+        :param job_params: Values needed by the workflow to run.
+        :return:
+        """
+        submit_url = '{}/{}'.format(self.__base_url, Job.url_suffix)
+        data = {
+            'job': job_params,
+            'workflow': workflow.serialize() if isinstance(workflow, Workflow) else workflow
+        }
+        res = requests.post(submit_url, headers=self.get_auth_header(), json=data)
+        res.raise_for_status()
+        return Job(res.json(), self.__base_url)

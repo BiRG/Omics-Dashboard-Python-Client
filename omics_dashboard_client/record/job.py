@@ -1,6 +1,8 @@
-from omics_dashboard_client.record.record import Record
 from datetime import datetime
+
 from typing import Dict, Any
+
+from omics_dashboard_client.record.record import Record
 
 
 class Job(Record):
@@ -37,11 +39,11 @@ class Job(Record):
 
     @owner_id.setter
     def owner_id(self, value):
-        raise PermissionError('Job metadata is not editable.')
+        raise RuntimeError('Job metadata is not editable.')
 
     @owner_id.deleter
     def owner_id(self):
-        raise PermissionError('Job metadata is not editable.')
+        raise RuntimeError('Job metadata is not editable.')
 
     @property
     def user_group_id(self):
@@ -54,11 +56,11 @@ class Job(Record):
 
     @user_group_id.setter
     def user_group_id(self, value):
-        raise PermissionError('Job metadata is not editable.')
+        raise RuntimeError('Job metadata is not editable.')
 
     @user_group_id.deleter
     def user_group_id(self):
-        raise PermissionError('Job metadata is not editable.')
+        raise RuntimeError('Job metadata is not editable.')
 
     @property
     def type(self):
@@ -71,11 +73,11 @@ class Job(Record):
 
     @type.setter
     def type(self, value):
-        raise PermissionError('Job metadata is not editable')
+        raise RuntimeError('Job metadata is not editable')
 
     @type.deleter
     def type(self):
-        raise PermissionError('Job metadata is not editable.')
+        raise RuntimeError('Job metadata is not editable.')
 
     @property
     def submission(self):
@@ -88,11 +90,11 @@ class Job(Record):
 
     @submission.setter
     def submission(self, value):
-        raise PermissionError('Job metadata is not editable.')
+        raise RuntimeError('Job metadata is not editable.')
 
     @submission.deleter
     def submission(self):
-        raise PermissionError('Job metadata is not editable.')
+        raise RuntimeError('Job metadata is not editable.')
 
     @property
     def start(self):
@@ -105,11 +107,11 @@ class Job(Record):
 
     @start.setter
     def start(self, value):
-        raise PermissionError('Job metadata is not editable.')
+        raise RuntimeError('Job metadata is not editable.')
 
     @start.deleter
     def start(self):
-        raise PermissionError('Job metadata is not editable.')
+        raise RuntimeError('Job metadata is not editable.')
 
     @property
     def end(self):
@@ -122,11 +124,11 @@ class Job(Record):
 
     @end.setter
     def end(self, value):
-        raise PermissionError('Job metadata is not editable.')
+        raise RuntimeError('Job metadata is not editable.')
 
     @end.deleter
     def end(self):
-        raise PermissionError('Job metadata is not editable.')
+        raise RuntimeError('Job metadata is not editable.')
 
     @property
     def status(self):
@@ -139,11 +141,11 @@ class Job(Record):
 
     @status.setter
     def status(self, value):
-        raise PermissionError('Job metadata is not editable.')
+        raise RuntimeError('Job metadata is not editable.')
 
     @status.deleter
     def status(self):
-        raise PermissionError('Job metadata is not editable.')
+        raise RuntimeError('Job metadata is not editable.')
 
     @property
     def logs(self):
@@ -156,11 +158,11 @@ class Job(Record):
 
     @logs.setter
     def logs(self, value):
-        raise PermissionError('Job metadata is not editable.')
+        raise RuntimeError('Job metadata is not editable.')
 
     @logs.deleter
     def logs(self):
-        raise PermissionError('Job metadata is not editable')
+        raise RuntimeError('Job metadata is not editable')
 
     def serialize(self):
         # type: () -> Dict[str, Any]
@@ -168,8 +170,8 @@ class Job(Record):
         Get a dictionary representation of this record's fields.
         :return:
         """
-        return {
-            **super().serialize(),
+        out = super(Job, self).serialize()
+        out.update({
             'owner_id': self._owner_id,
             'user_group_id': self._user_group_id,
             'type': self._type,
@@ -178,4 +180,5 @@ class Job(Record):
             'end': self._end.isoformat(),
             'status': self._status,
             'logs': self._logs
-        }
+        })
+        return out

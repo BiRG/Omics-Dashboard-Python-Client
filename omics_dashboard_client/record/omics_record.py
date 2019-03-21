@@ -1,5 +1,6 @@
-from omics_dashboard_client.record.record import Record
 from typing import Dict, Any, Union
+
+from omics_dashboard_client.record.record import Record
 
 
 class OmicsRecord(Record):
@@ -72,7 +73,7 @@ class OmicsRecord(Record):
         if self.__is_write_permitted:
             self._name = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @name.deleter
     def name(self):
@@ -95,7 +96,7 @@ class OmicsRecord(Record):
         if self.__is_write_permitted:
             self._description = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @description.deleter
     def description(self):
@@ -116,7 +117,7 @@ class OmicsRecord(Record):
         if self.__session_user_is_admin:
             self._creator_id = value
         else:
-            raise PermissionError('Only admins can edit this record.')
+            raise RuntimeError('Only admins can edit this record.')
 
     @creator_id.deleter
     def creator_id(self):
@@ -137,7 +138,7 @@ class OmicsRecord(Record):
         if self.__session_user_is_admin:
             self._owner_id = value
         else:
-            raise PermissionError('Only admins can edit this record.')
+            raise RuntimeError('Only admins can edit this record.')
 
     @owner_id.deleter
     def owner_id(self):
@@ -158,7 +159,7 @@ class OmicsRecord(Record):
         if self.__session_user_is_admin:
             self._last_editor_id = value
         else:
-            raise PermissionError('Only admins can edit this record.')
+            raise RuntimeError('Only admins can edit this record.')
 
     @last_editor_id.deleter
     def last_editor_id(self):
@@ -179,7 +180,7 @@ class OmicsRecord(Record):
         if self.__is_write_permitted:
             self._group_can_read = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @group_can_read.deleter
     def group_can_read(self):
@@ -200,7 +201,7 @@ class OmicsRecord(Record):
         if self.__is_write_permitted:
             self._group_can_write = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @group_can_write.deleter
     def group_can_write(self):
@@ -221,7 +222,7 @@ class OmicsRecord(Record):
         if self.__is_write_permitted:
             self._all_can_read = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @all_can_read.deleter
     def all_can_read(self):
@@ -242,7 +243,7 @@ class OmicsRecord(Record):
         if self.__is_write_permitted:
             self._all_can_write = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @all_can_write.deleter
     def all_can_write(self):
@@ -263,7 +264,7 @@ class OmicsRecord(Record):
         if self.__is_write_permitted:
             self._user_group_id = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @user_group_id.deleter
     def user_group_id(self):

@@ -1,5 +1,6 @@
-from omics_dashboard_client.record.file_record import FileRecord
 from typing import Dict, Any, List
+
+from omics_dashboard_client.record.file_record import FileRecord
 
 
 class ExternalFile(FileRecord):
@@ -30,14 +31,18 @@ class ExternalFile(FileRecord):
         if self.__is_write_permitted:
             self._analysis_ids = value
         else:
-            raise PermissionError('Current user cannot edit this record.')
+            raise RuntimeError('Current user cannot edit this record.')
 
     @analysis_ids.deleter
     def analysis_ids(self):
         raise RuntimeError('Fields cannot be deleted.')
 
     def serialize(self):
-        return {
-            **super().serialize(),
-            'analysis_ids': self._analysis_ids
-        }
+        # type: () -> Dict[str, Any]
+        """
+        Get a dictionary representation of this record's fields.
+        :return:
+        """
+        out = super(ExternalFile, self).serialize()
+        out.update({'analysis_ids': self._analysis_ids})
+        return out

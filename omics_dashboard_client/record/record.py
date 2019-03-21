@@ -1,8 +1,9 @@
-from typing import Dict, Any, Union
 from datetime import datetime
 
+from typing import Dict, Any, Union
 
-class Record:
+
+class Record(object):
     def __init__(self, res_data, base_url):
         # type: (Dict[str, Any], str) -> None
         """

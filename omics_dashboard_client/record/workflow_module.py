@@ -1,5 +1,6 @@
-from omics_dashboard_client.record.record import Record
 from typing import Dict, Any
+
+from omics_dashboard_client.record.record import Record
 
 
 class WorkflowModule(Record):
@@ -28,11 +29,11 @@ class WorkflowModule(Record):
 
     @path.setter
     def path(self, value):
-        raise PermissionError('Workflow modules are not editable.')
+        raise RuntimeError('Workflow modules are not editable.')
 
     @path.deleter
     def path(self):
-        raise PermissionError('Workflow modules are not editable.')
+        raise RuntimeError('Workflow modules are not editable.')
 
     @property
     def label(self):
@@ -41,11 +42,11 @@ class WorkflowModule(Record):
 
     @label.setter
     def label(self, value):
-        raise PermissionError('Workflow modules are not editable.')
+        raise RuntimeError('Workflow modules are not editable.')
 
     @label.deleter
     def label(self):
-        raise PermissionError('Workflow modules are not editable.')
+        raise RuntimeError('Workflow modules are not editable.')
 
     @property
     def description(self):
@@ -54,11 +55,11 @@ class WorkflowModule(Record):
 
     @description.setter
     def description(self, value):
-        raise PermissionError('Workflow modules are not editable.')
+        raise RuntimeError('Workflow modules are not editable.')
 
     @description.deleter
     def description(self):
-        raise PermissionError('Workflow modules are not editable.')
+        raise RuntimeError('Workflow modules are not editable.')
 
     @property
     def package(self):
@@ -67,11 +68,11 @@ class WorkflowModule(Record):
 
     @package.setter
     def package(self, value):
-        raise PermissionError('Workflow modules are not editable.')
+        raise RuntimeError('Workflow modules are not editable.')
 
     @package.deleter
     def package(self):
-        raise PermissionError('Workflow modules are not editable')
+        raise RuntimeError('Workflow modules are not editable')
 
     @property
     def package_description(self):
@@ -80,11 +81,11 @@ class WorkflowModule(Record):
 
     @package_description.setter
     def package_description(self, value):
-        raise PermissionError('Workflow modules are not editable.')
+        raise RuntimeError('Workflow modules are not editable.')
 
     @package_description.deleter
     def package_description(self):
-        raise PermissionError('Workflow modules are not editable.')
+        raise RuntimeError('Workflow modules are not editable.')
 
     @property
     def subpackage(self):
@@ -93,11 +94,11 @@ class WorkflowModule(Record):
 
     @subpackage.setter
     def subpackage(self, value):
-        raise PermissionError('Workflow modules are not editable.')
+        raise RuntimeError('Workflow modules are not editable.')
 
     @subpackage.deleter
     def subpackage(self):
-        raise PermissionError('Workflow modules are not editable.')
+        raise RuntimeError('Workflow modules are not editable.')
 
     @property
     def subpackage_description(self):
@@ -106,11 +107,11 @@ class WorkflowModule(Record):
 
     @subpackage_description.setter
     def subpackage_description(self, value):
-        raise PermissionError('Workflow modules are not editable.')
+        raise RuntimeError('Workflow modules are not editable.')
 
     @subpackage_description.deleter
     def subpackage_description(self):
-        raise PermissionError('Workflow modules are not editable.')
+        raise RuntimeError('Workflow modules are not editable.')
 
     @property
     def tool_definition(self):
@@ -119,11 +120,11 @@ class WorkflowModule(Record):
 
     @tool_definition.setter
     def tool_definition(self, value):
-        raise PermissionError('Workflow modules are not editable.')
+        raise RuntimeError('Workflow modules are not editable.')
 
     @tool_definition.deleter
     def tool_definition(self):
-        raise PermissionError('Workflow modules are not editable.')
+        raise RuntimeError('Workflow modules are not editable.')
 
     def serialize(self):
         # type: () -> Dict[str, Any]
@@ -131,8 +132,8 @@ class WorkflowModule(Record):
         Get a dictionary representation of this record's fields.
         :return:
         """
-        return {
-            **super().serialize(),
+        out = super(WorkflowModule, self).serialize()
+        out.update({
             'path': self._path,
             'label': self._label,
             'description': self._description,
@@ -141,4 +142,5 @@ class WorkflowModule(Record):
             'subpackage': self._subpackage,
             'subpackage_description': self._subpackage_description,
             'tool_definition': self._tool_definition
-        }
+        })
+        return out

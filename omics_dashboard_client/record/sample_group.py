@@ -1,5 +1,6 @@
-from omics_dashboard_client.record.omics_record import OmicsRecord
 from typing import Dict, List, Any
+
+from omics_dashboard_client.record.omics_record import OmicsRecord
 
 
 class SampleGroup(OmicsRecord):
@@ -36,7 +37,7 @@ class SampleGroup(OmicsRecord):
         if self.__is_write_permitted:
             self._sample_ids = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @sample_ids.deleter
     def sample_ids(self):
@@ -57,7 +58,7 @@ class SampleGroup(OmicsRecord):
         if self.__session_user_is_admin:
             self._upload_job_id = value
         else:
-            raise PermissionError('Only admins can edit this field.')
+            raise RuntimeError('Only admins can edit this field.')
 
     @upload_job_id.deleter
     def upload_job_id(self):
@@ -69,8 +70,9 @@ class SampleGroup(OmicsRecord):
         Get a dictionary representation of this record's fields.
         :return:
         """
-        return {
-            **super().serialize(),
+        out = super(SampleGroup, self).serialize()
+        out.update({
             'sample_ids': self._sample_ids,
             'upload_job_id': self._upload_job_id
-        }
+        })
+        return out

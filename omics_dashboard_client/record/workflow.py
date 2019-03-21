@@ -1,5 +1,6 @@
-from omics_dashboard_client.record.file_record import FileRecord
 from typing import Dict, List, Any
+
+from omics_dashboard_client.record.file_record import FileRecord
 
 
 class Workflow(FileRecord):
@@ -36,7 +37,7 @@ class Workflow(FileRecord):
         if self.__session_user_is_admin:
             self._workflow_language = value
         else:
-            raise PermissionError('Only admins can set this field.')
+            raise RuntimeError('Only admins can set this field.')
 
     @workflow_language.deleter
     def workflow_language(self):
@@ -52,7 +53,7 @@ class Workflow(FileRecord):
         if self.__is_write_permitted:
             self._workflow_definition = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @workflow_definition.deleter
     def workflow_definition(self):
@@ -69,7 +70,7 @@ class Workflow(FileRecord):
         if self.__is_write_permitted:
             self._analysis_ids = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @analysis_ids.deleter
     def analysis_ids(self):
@@ -81,9 +82,10 @@ class Workflow(FileRecord):
         Get a dictionary representation of this record's fields.
         :return:
         """
-        return {
-            **super().serialize(),
+        out = super(Workflow, self).serialize()
+        out.update({
             'workflow_language': self._workflow_language,
             'workflow_definition': self._workflow_definition,
             'analysis_ids': self.analysis_ids
-        }
+        })
+        return out

@@ -1,5 +1,6 @@
-from omics_dashboard_client.record.record import Record
 from typing import Dict, Any, List
+
+from omics_dashboard_client.record.record import Record
 
 
 class User(Record):
@@ -43,7 +44,7 @@ class User(Record):
         if self.__is_write_permitted:
             self._email = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @email.deleter
     def email(self):
@@ -66,7 +67,7 @@ class User(Record):
         if self.__is_write_permitted:
             self._name = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @name.deleter
     def name(self):
@@ -89,7 +90,7 @@ class User(Record):
         if self.__session_user_is_admin:
             self._admin = value
         else:
-            raise PermissionError('Only admins can elevate or de-elevate other users to admin')
+            raise RuntimeError('Only admins can elevate or de-elevate other users to admin')
 
     @admin.deleter
     def admin(self):
@@ -112,7 +113,7 @@ class User(Record):
         if self.__session_user_is_admin:
             self._active = value
         else:
-            raise PermissionError('Only admins can activate or deactivate user accounts')
+            raise RuntimeError('Only admins can activate or deactivate user accounts')
 
     @active.deleter
     def active(self):
@@ -130,7 +131,7 @@ class User(Record):
     @group_ids.setter
     def group_ids(self, value):
         # type: (str) -> None
-        raise PermissionError('User group membership should be changed by editing the user group.')
+        raise RuntimeError('User group membership should be changed by editing the user group.')
 
     @group_ids.deleter
     def group_ids(self):
@@ -153,7 +154,7 @@ class User(Record):
         if self.__is_write_permitted:
             self._primary_user_group_id = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @primary_user_group_id.deleter
     def primary_user_group_id(self):
@@ -171,7 +172,7 @@ class User(Record):
     @admin_group_ids.setter
     def admin_group_ids(self, value):
         # type: (List[int]) -> None
-        raise PermissionError('User group admin status should be changed by editing the user group.')
+        raise RuntimeError('User group admin status should be changed by editing the user group.')
 
     @admin_group_ids.deleter
     def admin_group_ids(self):

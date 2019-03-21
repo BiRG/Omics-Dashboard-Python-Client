@@ -1,5 +1,6 @@
-from omics_dashboard_client.record.record import Record
 from typing import Dict, Any, List
+
+from omics_dashboard_client.record.record import Record
 
 
 class UserGroup(Record):
@@ -42,7 +43,7 @@ class UserGroup(Record):
         if self.__is_write_permitted:
             self._name = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @name.deleter
     def name(self):
@@ -63,7 +64,7 @@ class UserGroup(Record):
         if self.__is_write_permitted:
             self._description = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @description.deleter
     def description(self):
@@ -84,7 +85,7 @@ class UserGroup(Record):
         if self.__is_write_permitted:
             self._member_ids = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @member_ids.deleter
     def member_ids(self):
@@ -104,7 +105,7 @@ class UserGroup(Record):
         if self.__is_write_permitted:
             self._admin_ids = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @admin_ids.deleter
     def admin_ids(self):
@@ -125,7 +126,7 @@ class UserGroup(Record):
         if self.__session_user_is_admin:
             self._creator_id = value
         else:
-            raise PermissionError('Only admins can modify creator_id or owner_id.')
+            raise RuntimeError('Only admins can modify creator_id or owner_id.')
 
     @creator_id.deleter
     def creator_id(self):

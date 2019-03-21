@@ -1,5 +1,6 @@
-from omics_dashboard_client.record.omics_record import OmicsRecord
 from typing import Dict, Any, List
+
+from omics_dashboard_client.record.omics_record import OmicsRecord
 
 
 class Analysis(OmicsRecord):
@@ -33,7 +34,7 @@ class Analysis(OmicsRecord):
         if self.__is_write_permitted:
             self._workflow_ids = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @workflow_ids.deleter
     def workflow_ids(self):
@@ -50,7 +51,7 @@ class Analysis(OmicsRecord):
         if self.__is_write_permitted:
             self._collection_ids = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @collection_ids.deleter
     def collection_ids(self):
@@ -67,7 +68,7 @@ class Analysis(OmicsRecord):
         if self.__is_write_permitted:
             self._external_file_ids = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @external_file_ids.deleter
     def external_file_ids(self):
@@ -75,9 +76,10 @@ class Analysis(OmicsRecord):
 
     def serialize(self):
         # type: () -> Dict[str, Any]
-        return {
-            **super().serialize(),
+        out = super(Analysis, self).serialize()
+        out.update({
             'collection_ids': self._collection_ids,
             'workflow_ids': self._workflow_ids,
             'external_file_ids': self._external_file_ids
-        }
+        })
+        return out

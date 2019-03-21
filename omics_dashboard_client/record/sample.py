@@ -1,5 +1,6 @@
-from omics_dashboard_client.record.numeric_file_record import NumericFileRecord
 from typing import Dict, Any, List
+
+from omics_dashboard_client.record.numeric_file_record import NumericFileRecord
 
 
 class Sample(NumericFileRecord):
@@ -35,7 +36,7 @@ class Sample(NumericFileRecord):
         if self.__is_write_permitted:
             self._sample_group_ids = value
         else:
-            raise PermissionError('Current user cannot edit this field.')
+            raise RuntimeError('Current user cannot edit this field.')
 
     @sample_group_ids.deleter
     def sample_group_ids(self):
@@ -47,7 +48,8 @@ class Sample(NumericFileRecord):
         Get a dictionary representation of this record's fields.
         :return:
         """
-        return {
-            **super().serialize(),
+        out = super(Sample, self).serialize()
+        out.update({
             'sample_group_ids': self._sample_group_ids
-        }
+        })
+        return out

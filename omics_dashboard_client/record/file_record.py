@@ -1,7 +1,9 @@
-from omics_dashboard_client.record.omics_record import OmicsRecord
-from typing import Dict, Any
-import tempfile
 import os
+import tempfile
+
+from typing import Dict, Any
+
+from omics_dashboard_client.record.omics_record import OmicsRecord
 
 
 class FileRecord(OmicsRecord):
@@ -132,21 +134,22 @@ class FileRecord(OmicsRecord):
     @file_info.setter
     def file_info(self, value):
         # type: (Dict[str, Any]) -> None
-        raise PermissionError('File info is determined by the Omics Dashboard service and cannot be changed.')
+        raise RuntimeError('File info is determined by the Omics Dashboard service and cannot be changed.')
 
     @file_info.deleter
     def file_info(self):
         raise RuntimeError('Fields cannot be deleted.')
 
     def download_file(self, content):
-        # type: (Any) -> None
+        # type: (bytes) -> None
         """
-        Generate a temporary filename (which should then be written to)
+        Associate this record with a file on disk.
         :return: The filename
         """
         if self.__temp_dir is None or not os.path.isdir(self.__temp_dir):
             self.__temp_dir = tempfile.mkdtemp()
-        filename_stub = os.path.basename(self._filename)
-        self._local_filename = os.path.join(self.__temp_dir, filename_stub)
+        if self._local_filename is not None and os.path.isfile(self._local_filename):  # delete existing file
+            os.remove(self._local_filename)
+        self._local_filename = os.path.join(self.__temp_dir, os.path.basename(self._filename))
         with open(self._local_filename, 'wb') as file:
             file.write(content)

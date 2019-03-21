@@ -18,6 +18,7 @@ setuptools.setup(
         'h5py',
         'pandas',
         'numpy',
+        'scipy',
         'typing'
     ],
     classifiers=[
