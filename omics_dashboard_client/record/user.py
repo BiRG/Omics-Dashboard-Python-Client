@@ -103,7 +103,7 @@ class User(Record):
         Whether or not this user is active in the system
         :return:
         """
-        return self.active
+        return self._active
 
     @active.setter
     def active(self, value):
