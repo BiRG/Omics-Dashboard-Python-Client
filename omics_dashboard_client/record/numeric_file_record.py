@@ -1,9 +1,9 @@
 import os
+from typing import Dict, Any, List
 
 import h5py
 import numpy as np
 import pandas as pd
-from typing import Dict, Any, List
 
 import omics_dashboard_client.hdf_tools as hdf_tools
 from omics_dashboard_client.record.file_record import FileRecord
@@ -104,8 +104,8 @@ class NumericFileRecord(FileRecord):
             raise RuntimeError('File has not been downloaded! Use Session.download_file to download the file for this '
                                'record')
 
-    def get_dataframe(self, row_index_key='base_sample_id', keys=None):
-        # type: (str, List[str]) -> pd.DataFrame
+    def get_dataframe(self, row_index_key='base_sample_id', keys=None, include_labels=True, numeric_columns=False):
+        # type: (str, List[str], bool, bool) -> pd.DataFrame
         """
         Get a Pandas DataFrame containing the records in keys or the columns of 'Y'. The column names will be 'Y_{x_i}'
         for 'x_i' in 'x' for Y if 'x' exists with the same dimensions as Y. Otherwise, the column names for all datasets
@@ -113,6 +113,8 @@ class NumericFileRecord(FileRecord):
         be the key of the dataset.
         :param row_index_key: A key for a column with unique values to use as a row index.
         :param keys: An iterable of keys to use as data for the dataframe.
+        :param include_labels: Whether to include those datasets which are row labels for Y
+        :param numeric_columns: Whether the column labels of Y should be the values of x, or the values of x prepended by Y (e.g. Y_15.2)
         :return:
         """
         """
@@ -123,7 +125,7 @@ class NumericFileRecord(FileRecord):
         :return:
         """
         if self.local_filename is not None and os.path.isfile(self.local_filename):
-            return hdf_tools.get_dataframe(self.local_filename, row_index_key, keys)
+            return hdf_tools.get_dataframe(self.local_filename, row_index_key, keys, include_labels, numeric_columns)
         else:
             raise RuntimeError('File has not been downloaded! Use Session.download_file to download the file for this '
                                'record')
