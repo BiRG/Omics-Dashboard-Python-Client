@@ -1,8 +1,10 @@
 import os
 import shutil
 import tempfile
-
+import warnings
 from typing import Dict, Any
+
+import h5py
 
 from omics_dashboard_client.record.omics_record import OmicsRecord
 
@@ -175,6 +177,7 @@ class FileRecord(OmicsRecord):
             fp.write(content)
 
     def update(self, new_data, base_url):
+        # type: (Dict[str, Any], str) -> None
         super(FileRecord, self).update(new_data, base_url)
         self._upload_url = '{}/upload'.format(base_url)
         self._update_url = '{}/{}'.format(base_url, self.id) if self.id is not None else None
@@ -183,3 +186,30 @@ class FileRecord(OmicsRecord):
         self._filename = new_data['filename']
         self._file_type = new_data['file_type']
         self._file_info = new_data['file_info']
+
+    def select_local_file(self, path, force=False):
+        # type: (str, bool) -> None
+        """
+        Set the local_filename field to an existing file. If the file does not exist or is not a valid HDF5 file, then
+        this will raise ValueError. With force=True, this will not raise.
+        :param path:
+        :param force: If true, filename will be set with errors ignored.
+        :return:
+        """
+        if os.path.isfile(path):
+            if h5py.is_hdf5(path):
+                self._local_filename = path
+            else:
+                msg = '{} is not a valid HDF5 file.'.format(path)
+                if force:
+                    warnings.warn(msg, RuntimeWarning)
+                    self._local_filename = path
+                else:
+                    raise ValueError(msg)
+        else:
+            msg = 'No file with path {} exists!'.format(path)
+            if force:
+                warnings.warn(msg, RuntimeWarning)
+                self._local_filename = path
+            else:
+                raise ValueError(msg)

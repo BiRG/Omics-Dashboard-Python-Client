@@ -1,7 +1,7 @@
 import json
+from typing import Union, Dict, Type, List, Any
 
 import requests
-from typing import Union, Dict, Type, List, Any
 
 from omics_dashboard_client.record.analysis import Analysis
 from omics_dashboard_client.record.collection import Collection
@@ -19,6 +19,7 @@ from omics_dashboard_client.record.workflow_module import WorkflowModule
 AnyRecord = Union[Analysis, Collection, ExternalFile, Job, Sample, SampleGroup, User, UserGroup, Workflow,
                   WorkflowModule]
 AnyRecordType = Type[AnyRecord]
+FileRecordType = Type[Union[Collection, ExternalFile, Sample, Workflow]]
 
 
 class Session:
@@ -178,7 +179,7 @@ class Session:
                 print('Response: ')
                 print(e.response.json())
                 raise e
-            record.update(res.json())
+            record.update(res.json(), self.__base_url)
             return record
         else:
             raise ValueError('Record is not valid.')
@@ -199,6 +200,16 @@ class Session:
             raise e
         record.download_file(res.content)
         return record
+
+    def get_and_download(self, record_type, record_id):
+        # type: (FileRecordType, Union[int, str]) -> FileRecord
+        """
+        Get a file record and download the file.
+        :param record_type: A class inheriting FileRecord (Collection, Sample, ExternalFile, Workflow)
+        :param record_id: The id of the record
+        :return: A record
+        """
+        return self.download_file(self.get(record_type, record_id))
 
     def submit_job(self, workflow, job_params):
         # type: (Union[Workflow, Dict[str, Any]], Dict[str, Any]) -> Job

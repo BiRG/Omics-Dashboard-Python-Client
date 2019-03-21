@@ -1,16 +1,35 @@
+from typing import Any, List
+
 import h5py
 import numpy as np
 import pandas as pd
-from typing import Any, List
 
 
-def get_dataframe(filename, row_index_key='base_sample_id', keys=None):
-    # type: (str, str, List[str]) -> pd.DataFrame
+def convert_strings(arr):
+    # type: (np.array) -> np.array
+    """
+    If we have an object array full of bytes, convert to str (depends on python version)
+    :param arr:
+    :return:
+    """
+    if arr.dtype == np.string_ or arr.dtype == np.object and str is not bytes:
+        try:
+            return np.vectorize(lambda x: x.decode('utf-8'))(arr)
+        except Exception as e:
+            print('Could not convert np.object or np.string_ to string:\n{}'.format(e))
+    return arr
+
+
+def get_dataframe(filename, row_index_key='base_sample_id', keys=None, include_labels=True, numeric_columns=False):
+    # type: (str, str, List[str], bool, bool) -> pd.DataFrame
     """
     Get a Pandas DataFrame from an hdf5 file
     :param filename:
     :param row_index_key: Key of a label row to use as the row index
-    :param keys: Keys to construct dataframe from. Should all have the same number of rows. If none, will use columns of '/Y'.
+    :param keys: Keys to construct dataframe from. Should all have the same number of rows. If none, will use columns of
+    '/Y' and all "labels" (arrays with the same number of rows as 'Y') if include_labels is true
+    :param include_labels: Whether or not to include those datasets with the same number of rows as Y (row labels).
+    :param numeric_columns: Whether the column names for Y should take the form x_i as opposed to Y_{x_i}.
     :return:
     """
     with h5py.File(filename, 'r') as fp:
@@ -20,18 +39,20 @@ def get_dataframe(filename, row_index_key='base_sample_id', keys=None):
             row_count = fp[keys[0]].shape[0]
         else:
             row_count = fp['Y'].shape[0]
-            keys = [key for key in fp.keys() if (fp[key].shape[0] == row_count)]
+            keys = [key for key in fp.keys() if (fp[key].shape[0] == row_count)] if include_labels else ['Y']
         index = np.asarray(fp[row_index_key]).flatten() if row_index_key in fp else [i for i in range(0, row_count)]
         df = pd.DataFrame(index=index)
         for key in keys:
             if key in {'Y', '/Y'}:
-                columns = ['Y_{}'.format(x_i) for x_i in np.asarray(fp['x']).flatten().tolist()] \
-                    if 'x' in fp else [i + 1 for i in range(0, fp['Y'].shape[1])]
+                columns = [str(x_i) if numeric_columns else 'Y_{}'.format(x_i)
+                           for x_i in np.asarray(fp['x']).flatten().tolist()] \
+                    if 'x' in fp else [str(i + 1) if numeric_columns else 'Y_{}'.format(i + 1)
+                                       for i in range(0, fp['Y'].shape[1])]
             else:
                 column_count = fp[key].shape[1] if len(fp[key].shape) > 1 else 1
-                columns = ['{}_{}'.format(key, i + 1) for i in range(0, fp[key].shape[1])] if column_count > 1 else [
-                    key]
-            new_df = pd.DataFrame(columns=columns, data=np.asarray(fp[key]), index=index)
+                columns = ['{}_{}'.format(key, i + 1) for i in range(0, column_count)] if column_count > 1 else [key]
+            data = convert_strings(np.asarray(fp[key]))
+            new_df = pd.DataFrame(columns=columns, data=data, index=index)
             df = pd.concat((df, new_df), axis=1)
         df.index.name = row_index_key if row_index_key is not None else 'id'
         return df
