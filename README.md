@@ -69,6 +69,7 @@ collection = session.get(Collection, 23)
 collection.name = 'New Results'
 session.update(collection)
 
+# download the file to modify file contents:
 session.download_file(collection)
 Y = collection.get_dataset('Y')
 Y = 0.01 * Y
@@ -76,7 +77,7 @@ collection.set_dataset('Y_modified', Y)
 session.update(collection)
 
 # create a new collection from modified collection
-collection = session.get(Collection, 74)
+collection = session.get_and_download(Collection, 74)
 Y = collection.get_dataset('Y')
 Y = 0.01 * Y
 collection.set_dataset('Y', Y)
