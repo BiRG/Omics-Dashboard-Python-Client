@@ -117,6 +117,7 @@ class Session:
             except requests.HTTPError as e:
                 print('Response: ')
                 print(e.response.json())
+                raise e
             record.invalidate()
             return res.json()
         else:
@@ -132,10 +133,8 @@ class Session:
         """
         if record.valid:
             if isinstance(record, FileRecord) and record.local_filename is not None and upload_file:
-                headers = {'Content-Type': 'multipart/form-data'}
-                headers.update(self.get_auth_header())
                 res = requests.post(record.update_url,
-                                    headers=headers,
+                                    headers=self.get_auth_header(),
                                     data=record.serialize(),
                                     files={'file': open(record.local_filename, 'rb')})
             else:
@@ -145,6 +144,7 @@ class Session:
             except requests.HTTPError as e:
                 print('Response: ')
                 print(e.response.json())
+                raise e
             record.update(res.json(), self.__base_url)
             return record
         else:
@@ -159,10 +159,8 @@ class Session:
         """
         if record.valid:
             if isinstance(record, FileRecord) and record.local_filename is not None:
-                headers = {'Content-Type': 'multipart/form-data'}
-                headers.update(self.get_auth_header())
                 res = requests.post(record.create_url,
-                                    headers=headers,
+                                    headers=self.get_auth_header(),
                                     data=record.serialize(),
                                     files={'file': open(record.local_filename, 'rb')})
             else:
@@ -174,6 +172,7 @@ class Session:
             except requests.HTTPError as e:
                 print('Response: ')
                 print(e.response.json())
+                raise e
             record.update(res.json())
             return record
         else:
@@ -192,6 +191,7 @@ class Session:
         except requests.HTTPError as e:
             print('Response: ')
             print(e.response.json())
+            raise e
         record.download_file(res.content)
         return record
 
@@ -214,6 +214,7 @@ class Session:
         except requests.HTTPError as e:
             print('Response: ')
             print(e.response.json())
+            raise e
         return Job(res.json(), self.__base_url)
 
     def cancel_job(self, job):
@@ -230,4 +231,5 @@ class Session:
         except requests.HTTPError as e:
             print('Response: ')
             print(e.response.json())
+            raise e
         return res.json()
