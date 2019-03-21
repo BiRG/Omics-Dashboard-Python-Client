@@ -16,8 +16,9 @@ from omics_dashboard_client.record.user_group import UserGroup
 from omics_dashboard_client.record.workflow import Workflow
 from omics_dashboard_client.record.workflow_module import WorkflowModule
 
-AnyRecordType = Type[Union[Analysis, Collection, ExternalFile, Job, Sample,
-                           SampleGroup, User, UserGroup, Workflow, WorkflowModule]]
+AnyRecord = Union[Analysis, Collection, ExternalFile, Job, Sample, SampleGroup, User, UserGroup, Workflow,
+                  WorkflowModule]
+AnyRecordType = Type[AnyRecord]
 
 
 class Session:
@@ -74,7 +75,7 @@ class Session:
             raise RuntimeError('Could not authenticate with provided credentials!')
 
     def get(self, record_type, record_id):
-        # type: (AnyRecordType, Union[str, int]) -> Record
+        # type: (AnyRecordType, Union[str, int]) -> AnyRecord
         """
         Get a record
         :param record_type: The type of the record (i.e. Sample, Collection, Analysis)
@@ -87,7 +88,7 @@ class Session:
         return record_type(res.json(), self.__base_url, self.__current_user.admin)
 
     def get_all(self, record_type):
-        # type: (AnyRecordType) -> List[Record]
+        # type: (AnyRecordType) -> List[AnyRecord]
         """
         Get all the records of a particular type.
         :param record_type:
@@ -190,3 +191,15 @@ class Session:
         res = requests.post(submit_url, headers=self.get_auth_header(), json=data)
         res.raise_for_status()
         return Job(res.json(), self.__base_url)
+
+    def cancel_job(self, job):
+        # type: (Job) -> Dict[str, Any]
+        """
+        Cancel a running job
+        :param job:
+        :return:
+        """
+        url = '{}/{}/{}?method=cancel'.format(self.__base_url, Job.url_suffix, job.id)
+        res = requests.post(url, headers=self.get_auth_header(), json={})
+        res.raise_for_status()
+        return res.json()

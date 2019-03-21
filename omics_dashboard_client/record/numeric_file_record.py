@@ -40,7 +40,26 @@ class NumericFileRecord(FileRecord):
             raise RuntimeError('File has not been downloaded! Use Session.download_file to download the file for this '
                                'record')
 
-    def get_array(self, path):
+    def set_attr(self, key, value, path=None):
+        # type: (str, Any, str) -> None
+        """
+        Get an attribute of the file or a path (Group or Dataset) inside the file.
+        :param key: The key of the attribute to set.
+        :param value: The new value for the attribute.
+        :param path: Optional. Set the attribute on a Group or Dataset of the file.
+        :return:
+        """
+        if self.local_filename is not None and os.path.isfile(self.local_filename):
+            with h5py.File(self.local_filename, 'r') as fp:
+                if path is not None:
+                    fp[path].attrs[key] = value
+                else:
+                    fp.attrs[key] = value
+        else:
+            raise RuntimeError('File has not been downloaded! Use Session.download_file to download the file for this '
+                               'record')
+
+    def get_dataset(self, path):
         # type: (str) -> np.array
         """
         Get a numpy array from the file.
@@ -54,8 +73,8 @@ class NumericFileRecord(FileRecord):
             raise RuntimeError('File has not been downloaded! Use Session.download_file to download the file for this '
                                'record')
 
-    def set_array(self, arr, path):
-        # type: (np.array, str) -> None
+    def set_dataset(self, path, arr):
+        # type: (str, np.array) -> None
         """
         Set the value of the dataset at path to arr
         :param arr: The numpy array.
