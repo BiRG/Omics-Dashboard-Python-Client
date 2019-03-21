@@ -282,14 +282,11 @@ class OmicsRecord(Record):
             'description': self._description,
             'creator_id': self._creator_id,
             'owner_id': self._owner_id,
-            'last_editor_id': self._last_editor_id,
             'group_can_read': self._group_can_read,
             'group_can_write': self._group_can_write,
             'all_can_read': self._all_can_read,
             'all_can_write': self._all_can_write,
             'user_group_id': self._user_group_id,
-            'created_on': self._created_on.isoformat(),
-            'updated_on': self._updated_on.isoformat()
         }
 
     def update(self, new_data, base_url):

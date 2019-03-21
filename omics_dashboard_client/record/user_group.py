@@ -148,7 +148,7 @@ class UserGroup(Record):
         }
 
     def update(self, new_data, base_url):
-        super(UserGroup, self).update(new_data, base_url)
+        super(UserGroup, self).update(new_data, '{}/{}'.format(base_url, UserGroup.url_suffix))
         self._creator_id = new_data['creator_id']
         self._name = new_data['name']
         self._description = new_data['description']

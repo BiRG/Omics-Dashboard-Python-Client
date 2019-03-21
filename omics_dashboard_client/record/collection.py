@@ -115,6 +115,7 @@ class Collection(NumericFileRecord):
         return out
 
     def update(self, new_data, base_url):
-        super(Collection, self).update(new_data, base_url)
+        super(Collection, self).update(new_data,
+                                       '{}/{}'.format(base_url, Collection.url_suffix))
         self._analysis_ids = new_data['analysis_ids']
         self._parent_id = new_data['parent_id']

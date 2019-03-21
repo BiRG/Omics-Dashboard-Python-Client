@@ -48,5 +48,5 @@ class ExternalFile(FileRecord):
         return out
 
     def update(self, new_data, base_url):
-        super(ExternalFile, self).update(new_data, base_url)
+        super(ExternalFile, self).update(new_data, '{}/{}'.format(base_url, ExternalFile.url_suffix))
         self._analysis_ids = new_data['analysis_ids']

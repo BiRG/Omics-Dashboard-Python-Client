@@ -4,7 +4,7 @@ from omics_dashboard_client.record.omics_record import OmicsRecord
 
 
 class SampleGroup(OmicsRecord):
-    url_prefix = "sample_groups"
+    url_suffix = "sample_groups"
 
     def __init__(self,
                  res_data,
@@ -17,7 +17,7 @@ class SampleGroup(OmicsRecord):
         :param session_user_is_admin:
         """
         super(SampleGroup, self).__init__(res_data,
-                                          base_url,
+                                          '{}/{}'.format(base_url, SampleGroup.url_suffix),
                                           session_user_is_admin)
         self._sample_ids = [sample['id'] for sample in res_data['samples']]
         self._upload_job_id = res_data['upload_job_id']
@@ -78,6 +78,6 @@ class SampleGroup(OmicsRecord):
         return out
 
     def update(self, new_data, base_url):
-        super(SampleGroup, self).update(new_data, base_url)
+        super(SampleGroup, self).update(new_data, '{}/{}'.format(base_url, SampleGroup.url_suffix))
         self._sample_ids = [sample['id'] for sample in new_data['samples']]
         self._upload_job_id = new_data['upload_job_id']

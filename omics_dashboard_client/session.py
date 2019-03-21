@@ -133,12 +133,17 @@ class Session:
         """
         if record.valid:
             if isinstance(record, FileRecord) and record.local_filename is not None and upload_file:
-                res = requests.post(record.update_url,
-                                    headers=self.get_auth_header(),
-                                    data=record.serialize(),
-                                    files={'file': open(record.local_filename, 'rb')})
-            else:
-                res = requests.post(record.update_url, headers=self.get_auth_header(), json=record.serialize())
+                # We make two requests because multipart/form-data doesn't handle arrays very well
+                upload_res = requests.post(record.update_url,
+                                           headers=self.get_auth_header(),
+                                           files={'file': open(record.local_filename, 'rb')})
+                try:
+                    upload_res.raise_for_status()
+                except requests.HTTPError as e:
+                    print('Response: ')
+                    print(e.response.json())
+                    raise e
+            res = requests.post(record.update_url, headers=self.get_auth_header(), json=record.serialize())
             try:
                 res.raise_for_status()
             except requests.HTTPError as e:

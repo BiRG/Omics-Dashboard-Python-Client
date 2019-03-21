@@ -195,7 +195,7 @@ class User(Record):
         }
 
     def update(self, new_data, base_url):
-        super(User, self).update(new_data, base_url)
+        super(User, self).update(new_data, '{}/{}'.format(base_url, User.url_suffix))
         self._email = new_data['email']
         self._name = new_data['name']
         self._admin = new_data['admin']

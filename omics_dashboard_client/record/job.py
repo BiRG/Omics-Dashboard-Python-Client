@@ -184,7 +184,7 @@ class Job(Record):
         return out
 
     def update(self, new_data, base_url):
-        super(Job, self).update(new_data, base_url)
+        super(Job, self).update(new_data, '{}/{}'.format(base_url, Job.url_suffix))
         self._owner_id = new_data['owner_id']
         self._user_group_id = new_data['user_group_id']
         self._type = new_data['type']

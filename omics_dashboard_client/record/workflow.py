@@ -91,7 +91,7 @@ class Workflow(FileRecord):
         return out
 
     def update(self, new_data, base_url):
-        super(Workflow, self).update(new_data, base_url)
+        super(Workflow, self).update(new_data, '{}/{}'.format(base_url, Workflow.url_suffix))
         self._workflow_language = new_data['workflow_language']
         self._workflow_definition = new_data['workflow_definition']
         self._analysis_ids = new_data['analysis_ids']

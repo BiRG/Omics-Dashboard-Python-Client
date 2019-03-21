@@ -146,7 +146,7 @@ class WorkflowModule(Record):
         return out
 
     def update(self, new_data, base_url):
-        super(WorkflowModule, self).update(new_data, base_url)
+        super(WorkflowModule, self).update(new_data, '{}/{}'.format(base_url, WorkflowModule.url_suffix))
         self._path = new_data['path']
         self._label = new_data['label']
         self._description = new_data['description']
