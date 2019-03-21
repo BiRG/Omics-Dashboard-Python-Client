@@ -12,8 +12,8 @@ class Record(object):
         """
         self._original_id = res_data['id'] if 'id' in res_data else None
         self._id = res_data['id'] if 'id' in res_data else None
-        self._created_on = datetime.fromisoformat(res_data['created_on']) if 'created_on' in res_data else None
-        self._updated_on = datetime.fromisoformat(res_data['updated_on']) if 'updated_on' in res_data else None
+        self._created_on = datetime.strptime(res_data['created_on'], '%Y-%m-%dT%H%:%M:%S')
+        self._updated_on = datetime.strptime(res_data['updated_on'], '%Y-%m-%dT%H%:%M:%S')
         self._base_url = base_url
         self._update_url = '{}/{}'.format(base_url, self.id) if self.id is not None else None
         self._create_url = '{}/create'.format(base_url)
