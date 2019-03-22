@@ -1,7 +1,7 @@
 import json
-from typing import Union, Dict, Type, List, Any
 
 import requests
+from typing import Union, Dict, Type, List, Any
 
 from omics_dashboard_client.record.analysis import Analysis
 from omics_dashboard_client.record.collection import Collection
@@ -36,17 +36,17 @@ class Session:
         self.__base_url = '{}/api'.format(base_url)
         if isinstance(credentials, str):
             # try to read json file
-            self.credentials = json.load(open(credentials))
+            self.__credentials = json.load(open(credentials))
         else:
-            self.credentials = credentials
+            self.__credentials = credentials
         headers = {'Content-Type': 'application/json'}
-        res = requests.post('{}/api/authenticate'.format(base_url), json=self.credentials, headers=headers)
+        res = requests.post('{}/api/authenticate'.format(base_url), json=self.__credentials, headers=headers)
         res.raise_for_status()
         self.__auth_token = res.json()['token']
         self.__current_user = None
 
     def authenticate(self):
-        res = requests.post('{}/authenticate'.format(self.__base_url), json=self.credentials)
+        res = requests.post('{}/authenticate'.format(self.__base_url), json=self.__credentials)
         try:
             res.raise_for_status()
             self.__auth_token = res.json()['token']
