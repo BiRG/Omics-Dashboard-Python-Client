@@ -34,22 +34,23 @@ class Session:
                             or a dictionary containing an email and password
         """
         self.__base_url = '{}/api'.format(base_url)
-        if isinstance(credentials, str):
-            # try to read json file
-            self.__credentials = json.load(open(credentials))
-        else:
-            self.__credentials = credentials
-        headers = {'Content-Type': 'application/json'}
-        res = requests.post('{}/api/authenticate'.format(base_url), json=self.__credentials, headers=headers)
-        res.raise_for_status()
-        self.__auth_token = res.json()['token']
+        self.__auth_token = None
         self.__current_user = None
+        self.authenticate(credentials)
 
-    def authenticate(self):
-        res = requests.post('{}/authenticate'.format(self.__base_url), json=self.__credentials)
+    def _refresh_current_user(self):
+        res = requests.get('{}/current_user'.format(self.__base_url),
+                           headers={'Authorization': 'Bearer {}'.format(self.__auth_token)})
+        res.raise_for_status()
+        self.__current_user = User(res.json(), self.__base_url, False)
+
+    def authenticate(self, credentials):
+        credentials = json.load(open(credentials)) if isinstance(credentials, str) else credentials
+        res = requests.post('{}/authenticate'.format(self.__base_url), json=credentials)
         try:
             res.raise_for_status()
             self.__auth_token = res.json()['token']
+            self._refresh_current_user()
         except requests.HTTPError as e:
             message = 'Could not authenticate with provided credentials. Status code {}'.format(e.response.status_code)
             raise ValueError(message)
@@ -57,10 +58,7 @@ class Session:
     def is_authenticated(self):
         if self.__auth_token is not None:
             try:
-                res = requests.get('{}/current_user'.format(self.__base_url),
-                                   headers={'Authorization': 'Bearer {}'.format(self.__auth_token)})
-                res.raise_for_status()
-                self.__current_user = User(res.json(), self.__base_url, False)
+                self._refresh_current_user()
                 return self.__current_user.active
             except requests.HTTPError:
                 return False
@@ -70,10 +68,7 @@ class Session:
         if self.is_authenticated():
             return {'Authorization': 'Bearer {}'.format(self.__auth_token)}
         else:
-            self.authenticate()
-            if self.is_authenticated():
-                return {'Authorization': 'Bearer {}'.format(self.__auth_token)}
-            raise RuntimeError('Could not authenticate with provided credentials!')
+            raise RuntimeError('Authorization is invalid or expired. Please run authenticate() with your credentials.')
 
     def get(self, record_type, record_id):
         # type: (AnyRecordType, Union[str, int]) -> AnyRecord
