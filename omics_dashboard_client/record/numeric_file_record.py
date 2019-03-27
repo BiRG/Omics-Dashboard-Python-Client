@@ -54,6 +54,24 @@ class NumericFileRecord(FileRecord):
             raise RuntimeError('File has not been downloaded! Use Session.download_file to download the file for this '
                                'record')
 
+    def delete_attr(self, key, path=None):
+        # type: (str, str) -> None
+        """
+        Delete an attribute of the file or a path (Group or Dataset) inside the file.
+        :param key: The key of the attribute to set.
+        :param path: Optional. Set the attribute on a Group or Dataset of the file.
+        :return:
+        """
+        if self.local_filename is not None and os.path.isfile(self.local_filename):
+            with h5py.File(self.local_filename, 'r+') as fp:
+                if path is not None:
+                    del fp[path].attrs[key]
+                else:
+                    del fp.attrs[key]
+        else:
+            raise RuntimeError('File has not been downloaded! Use Session.download_file to download the file for this '
+                               'record')
+
     def set_attr(self, key, value, path=None):
         # type: (str, Any, str) -> None
         """
@@ -83,6 +101,20 @@ class NumericFileRecord(FileRecord):
         if self.local_filename is not None and os.path.isfile(self.local_filename):
             with h5py.File(self.local_filename, 'r') as fp:
                 return np.asarray(fp[path])
+        else:
+            raise RuntimeError('File has not been downloaded! Use Session.download_file to download the file for this '
+                               'record')
+
+    def delete_dataset(self, path):
+        # type: (str) -> None
+        """
+        Delete a dataset from the file.
+        :param path: Path to the dataset
+        :return:
+        """
+        if self.local_filename is not None and os.path.isfile(self.local_filename):
+            with h5py.File(self.local_filename, 'r+') as fp:
+                del fp[path]
         else:
             raise RuntimeError('File has not been downloaded! Use Session.download_file to download the file for this '
                                'record')
