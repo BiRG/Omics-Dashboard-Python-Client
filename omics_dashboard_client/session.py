@@ -119,15 +119,17 @@ class Session:
         else:
             raise ValueError('Record is not valid.')
 
-    def update(self, record, upload_file=False):
+    def update(self, record, upload_file=None):
         # type: (Record, bool) -> Record
         """
         Update the server with the values of the record
         :param record: The record to update on the server
-        :param upload_file: Only applies when record is FileRecord
+        :param upload_file: Only applies when record is FileRecord. Default behavior will be as if it is true if the file is downloaded.
         :return:
         """
         if record.valid:
+            if upload_file is None:
+                upload_file = isinstance(record, FileRecord) and record.local_filename is not None
             if isinstance(record, FileRecord) and record.local_filename is not None and upload_file:
                 # We make two requests because multipart/form-data doesn't handle arrays very well
                 upload_res = requests.post(record.update_url,
