@@ -194,3 +194,13 @@ class NumericFileRecord(FileRecord):
         else:
             raise RuntimeError('File has not been downloaded! Use Session.download_file to download the file for this '
                                'record')
+
+    def merge(self, others):
+        # type: (List[NumericFileRecord]) -> None
+        """
+        Merge the rows from the other file into this one
+        :param others:
+        :return:
+        """
+        filenames = [self.local_filename] + [other.local_filename for other in others]
+        hdf_tools.h5_merge(filenames, self.local_filename, orientation='vert', reserved_paths=['/x'], align_at='/x')
