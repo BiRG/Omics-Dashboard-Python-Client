@@ -1,8 +1,7 @@
-from typing import Any, List
-
 import h5py
 import numpy as np
 import pandas as pd
+from typing import Any, List
 
 
 def convert_strings(arr):
@@ -20,8 +19,13 @@ def convert_strings(arr):
     return arr
 
 
-def get_dataframe(filename, row_index_key='base_sample_id', keys=None, include_labels=True, numeric_columns=False):
-    # type: (str, str, List[str], bool, bool) -> pd.DataFrame
+def get_dataframe(filename,
+                  row_index_key='base_sample_id',
+                  keys=None,
+                  include_labels=True,
+                  numeric_columns=False,
+                  include_only_labels=False):
+    # type: (str, str, List[str], bool, bool, bool) -> pd.DataFrame
     """
     Get a Pandas DataFrame from an hdf5 file
     :param filename:
@@ -30,8 +34,10 @@ def get_dataframe(filename, row_index_key='base_sample_id', keys=None, include_l
     '/Y' and all "labels" (arrays with the same number of rows as 'Y') if include_labels is true
     :param include_labels: Whether or not to include those datasets with the same number of rows as Y (row labels).
     :param numeric_columns: Whether the column names for Y should take the form x_i as opposed to Y_{x_i}.
+    :param include_only_labels: Whether to exclude 'Y' entirely and only include those datasets with the same number of rows as Y, but not Y.
     :return:
     """
+    include_labels = include_only_labels or include_labels
     with h5py.File(filename, 'r') as fp:
         if 'Y' not in fp and not keys:
             raise ValueError('No \'Y\' dataset in file and no other keys specified.')
@@ -42,6 +48,8 @@ def get_dataframe(filename, row_index_key='base_sample_id', keys=None, include_l
             keys = [key for key in fp.keys() if (fp[key].shape[0] == row_count)] if include_labels else ['Y']
         index = np.asarray(fp[row_index_key]).flatten() if row_index_key in fp else [i for i in range(0, row_count)]
         df = pd.DataFrame(index=index)
+        if include_only_labels and 'Y' in keys:
+            keys.remove('Y')
         for key in keys:
             if key in {'Y', '/Y'}:
                 columns = [str(x_i) if numeric_columns else 'Y_{}'.format(x_i)
