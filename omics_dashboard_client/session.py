@@ -162,7 +162,7 @@ class Session:
         """
         if record.valid:
             if isinstance(record, FileRecord) and record.local_filename is not None:
-                res = requests.post(record.create_url,
+                res = requests.post(record.upload_url,
                                     headers=self.get_auth_header(),
                                     data=record.serialize(),
                                     files={'file': open(record.local_filename, 'rb')})
