@@ -24,7 +24,7 @@ class FileRecord(OmicsRecord):
         self._local_filename = None  # if not None, then the file is downloaded
         self._upload_url = '{}/upload'.format(base_url)
         self._update_url = '{}/{}'.format(base_url, self.id) if self.id is not None else None
-        self._create_url = '{}/create'.format(base_url)
+        self._create_url = base_url
         self._download_url = '{}/download/{}'.format(base_url, self.id)
         self._filename = res_data['filename']
         self._file_type = res_data['file_type']
