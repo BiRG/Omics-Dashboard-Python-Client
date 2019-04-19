@@ -70,7 +70,24 @@ class Session:
         else:
             raise RuntimeError('Authorization is invalid or expired. Please run authenticate() with your credentials.')
 
-    def get(self, record_type, record_id):
+    def download_file(self, record):
+        # type: (FileRecord) -> FileRecord
+        """
+        Download the file associated with a FileRecord.
+        :param record:
+        :return:
+        """
+        res = requests.get(record.download_url, headers=self.get_auth_header())
+        try:
+            res.raise_for_status()
+        except requests.HTTPError as e:
+            print('Response: ')
+            print(e.response.json())
+            raise e
+        record.download_file(res.content)
+        return record
+    
+    def get(self, record_type, record_id, download_file=False):
         # type: (AnyRecordType, Union[str, int]) -> AnyRecord
         """
         Get a record
@@ -81,7 +98,10 @@ class Session:
         url = '{}/{}/{}'.format(self.__base_url, record_type.url_suffix, record_id)
         res = requests.get(url, headers=self.get_auth_header())
         res.raise_for_status()
-        return record_type(res.json(), self.__base_url, self.__current_user.admin)
+        record = record_type(res.json(), self.__base_url, self.__current_user.admin)
+        if download_file:
+            return self.download_file(record)
+        return record
 
     def get_all(self, record_type):
         # type: (AnyRecordType) -> List[AnyRecord]
@@ -180,33 +200,6 @@ class Session:
             return record
         else:
             raise ValueError('Record is not valid.')
-
-    def download_file(self, record):
-        # type: (FileRecord) -> FileRecord
-        """
-        Download the file associated with a FileRecord.
-        :param record:
-        :return:
-        """
-        res = requests.get(record.download_url, headers=self.get_auth_header())
-        try:
-            res.raise_for_status()
-        except requests.HTTPError as e:
-            print('Response: ')
-            print(e.response.json())
-            raise e
-        record.download_file(res.content)
-        return record
-
-    def get_and_download(self, record_type, record_id):
-        # type: (FileRecordType, Union[int, str]) -> FileRecord
-        """
-        Get a file record and download the file.
-        :param record_type: A class inheriting FileRecord (Collection, Sample, ExternalFile, Workflow)
-        :param record_id: The id of the record
-        :return: A record
-        """
-        return self.download_file(self.get(record_type, record_id))
 
     def submit_job(self, workflow, job_params):
         # type: (Union[Workflow, Dict[str, Any]], Dict[str, Any]) -> Job

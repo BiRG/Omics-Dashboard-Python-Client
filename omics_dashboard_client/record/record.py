@@ -16,7 +16,7 @@ class Record(object):
         self._updated_on = datetime.strptime(res_data['updated_on'], '%Y-%m-%dT%H:%M:%S')
         self._base_url = base_url
         self._update_url = '{}/{}'.format(base_url, self.id) if self.id is not None else None
-        self._create_url = '{}/create'.format(base_url)
+        self._create_url = base_url
         self._valid = True
 
     @property
