@@ -225,14 +225,21 @@ def approximate_dims(filename):
             return 0, 0
 
 
-def get_datasets(fp):
-    # type: (h5py.File) -> List[h5py.Dataset]
+def get_datasets(group):
+    # type: (h5py.Group) -> List[h5py.Dataset]
     """
     Get all the datasets in this file
-    :param fp:
+    :param group:
     :return:
     """
-    return [fp[key] for key in fp.keys() if isinstance(fp[key], h5py.Dataset)]
+    """Get all the datasets in this file (recursively)"""
+    datasets = []
+    for key in group.keys():
+        if isinstance(group[key], h5py.Dataset):
+            datasets.append(group[key])
+        elif isinstance(group[key], h5py.Group):
+            datasets = datasets + get_datasets(group[key])
+    return datasets
 
 
 def add_column(filename, name, data_type='string'):
