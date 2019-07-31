@@ -1,7 +1,7 @@
 import json
+from typing import Union, Dict, Type, List, Any
 
 import requests
-from typing import Union, Dict, Type, List, Any
 
 from omics_dashboard_client.record.analysis import Analysis
 from omics_dashboard_client.record.collection import Collection
@@ -26,8 +26,9 @@ class Session:
     """
     Create one of these before doing anything else
     """
-    def __init__(self, base_url, credentials):
-        # type: (str, Union[str, Dict[str, str]]) -> None
+
+    def __init__(self, base_url, credentials=None, auth_token=None):
+        # type: (str, Union[str, Dict[str, str]], Union[str, None]) -> None
         """
         :param base_url:  The base url of your Omics Dashboard service (ex: 'https://example.com/omics')
         :param credentials: Either a filename of a json file (which you should have 400 permissions or be similarly secure)
@@ -36,7 +37,7 @@ class Session:
         self.__base_url = '{}/api'.format(base_url)
         self.__auth_token = None
         self.__current_user = None
-        self.authenticate(credentials)
+        self.authenticate(credentials, auth_token)
 
     def _refresh_current_user(self):
         res = requests.get('{}/current_user'.format(self.__base_url),
@@ -44,13 +45,20 @@ class Session:
         res.raise_for_status()
         self.__current_user = User(res.json(), self.__base_url, False)
 
-    def authenticate(self, credentials):
-        credentials = json.load(open(credentials)) if isinstance(credentials, str) else credentials
-        res = requests.post('{}/authenticate'.format(self.__base_url), json=credentials)
+    def authenticate(self, credentials, auth_token=None):
         try:
-            res.raise_for_status()
-            self.__auth_token = res.json()['token']
-            self._refresh_current_user()
+            if auth_token is not None:
+                self.__auth_token = auth_token
+                self._refresh_current_user()
+            elif credentials is not None:
+                credentials = json.load(open(credentials)) if isinstance(credentials, str) else credentials
+                res = requests.post('{}/authenticate'.format(self.__base_url), json=credentials)
+                res.raise_for_status()
+                self.__auth_token = res.json()['token']
+                self._refresh_current_user()
+            else:
+                raise ValueError('Credentials or an authentication token must be provided.'
+                                 ' credentials can be a filename or a dictionary containing "email" and "password"')
         except requests.HTTPError as e:
             message = 'Could not authenticate with provided credentials. Status code {}'.format(e.response.status_code)
             raise ValueError(message)
