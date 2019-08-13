@@ -88,38 +88,16 @@ def get_csv(filename, path):
     """
     """Get a string containing comma-separated values for a dataset"""
     with h5py.File(filename, 'r') as infile:
-        dataset = infile[str(path)].value
-    s = StringIO()
-    if dataset is not None:
-        for row in dataset:
-            s.write(convert_row(row))
-            s.write('\n')
-        csv = s.getvalue()
-        return csv.encode('ascii') if str is bytes else csv
-    raise ValueError('File or path not found')
-
-
-def convert_row(row):
-    # type: (np.array) -> str
-    """
-    Get a csv representation of a row of a dataset.
-    :param row:
-    :return:
-    """
-    if isinstance(row, bytes):
-        return row.decode('ascii') if str is not bytes else row
-    else:
-        return ','.join([convert_cell(cell) for cell in row])
-
-
-def convert_cell(cell):
-    # type: (Any) -> str
-    """
-    Convert an array cell to utf-8 string on python3 or ascii bytes on python2
-    :param cell:
-    :return:
-    """
-    return cell.decode('ascii') if isinstance(cell, bytes) and str is not bytes else str(cell)
+        dataset = infile[str(path)]
+        s = StringIO()
+        if dataset is not None:
+            dataset = np.array(dataset)
+            if dataset.dtype.type is np.object_:
+                dataset = dataset.astype(str)
+                np.savetxt(s, dataset, delimiter=',', fmt='%s')
+            else:
+                np.savetxt(s, dataset, delimiter=',')
+        return s.getvalue() if str is not bytes else s.getvalue().encode('utf-8')
 
 
 def iterate_dataset_paths(group, paths):
