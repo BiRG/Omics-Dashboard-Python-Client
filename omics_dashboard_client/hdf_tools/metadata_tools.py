@@ -92,11 +92,15 @@ def get_csv(filename, path):
         s = StringIO()
         if dataset is not None:
             dataset = np.array(dataset)
-            if dataset.dtype.type is np.object_:
+            if np.issubdtype(dataset.dtype, np.object_):
                 dataset = dataset.astype(str)
+                fmt = '%s'
+            elif np.issubdtype(dataset.dtype, np.integer):
+                fmt = '%d'
                 np.savetxt(s, dataset, delimiter=',', fmt='%s')
             else:
-                np.savetxt(s, dataset, delimiter=',')
+                fmt = '%.18e'
+            np.savetxt(s, dataset, delimiter=',', fmt=fmt)
         return s.getvalue() if str is not bytes else s.getvalue().encode('utf-8')
 
 
