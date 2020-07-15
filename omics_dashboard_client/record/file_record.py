@@ -115,7 +115,7 @@ class FileRecord(OmicsRecord):
         The filename of the file on the omics server.
         :return:
         """
-        return self.filename
+        return self._filename
 
     @filename.setter
     def filename(self, value):
